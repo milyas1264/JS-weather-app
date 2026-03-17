@@ -69,3 +69,10 @@ function showWeather(data){
   `;
   
   }
+  input.addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
+    getWeather(input.value);
+    }
+    
+    });
