@@ -1,90 +1,91 @@
 const apiKey = "ade7cdd361e52ae25f8bd5f0b5be2863";
-const recentList = document.querySelector("#history");
+const recentList = document.querySelector("#recent-list");
 const btn = document.querySelector("#search");
 const input = document.querySelector("#city");
 const weatherDiv = document.querySelector("#weather");
 const loading = document.querySelector("#loading");
 
-btn.addEventListener("click", function(){
+recentList.addEventListener("click", function(e){
 
-const city = input.value;
+  if(e.target.tagName === "LI"){
+  getWeather(e.target.innerText);
+  }
+  
+  });
 
-getWeather(city);
+btn.addEventListener("click", function () {
+  const city = input.value;
 
+  getWeather(city);
 });
 
-async function getWeather(city){
+async function getWeather(city) {
+  try {
+    loading.style.display = "block";
+    weatherDiv.innerHTML = "";
 
-  try{
-  
-  loading.style.display = "block";
-  weatherDiv.innerHTML = "";
-  
-  const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`);
-  
-  const data = await res.json();
-  
-  loading.style.display = "none";
-  
-  if(data.cod === "404"){
-    weatherDiv.innerHTML = `
+    const res = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`,
+    );
+
+    const data = await res.json();
+
+    loading.style.display = "none";
+
+    if (data.cod === "404") {
+      weatherDiv.innerHTML = `
     <div class="card">
     <p style="color:red;">City not found ❌</p>
     </div>
     `;
-  return;
-  }
-  
-  showWeather(data);
-  
-  }catch(error){
-  
-  loading.style.display = "none";
-  weatherDiv.innerHTML = "Error fetching data";
-  
-  }
-  
-  }
+      return;
+    }
 
-  function saveRecent(city){
+    showWeather(data);
+    saveRecent(city);
+  } catch (error) {
+    loading.style.display = "none";
+    weatherDiv.innerHTML = "Error fetching data";
+  }
+}
 
-    let recent = JSON.parse(localStorage.getItem("recent")) || [];
-    
-    if(!recent.includes(city)){
+function saveRecent(city) {
+  
+  let recent = JSON.parse(localStorage.getItem("recent")) || [];
+  
+  if (!recent.includes(city)) {
     recent.push(city);
+    recent = recent.slice(-5);
     localStorage.setItem("recent", JSON.stringify(recent));
-    }
-    
-    showRecent();
-    
-    }
+  }
 
-    function showRecent(){
+  showRecent();
+}
 
-      const recent = JSON.parse(localStorage.getItem("recent")) || [];
-      
-      recentList.innerHTML = "";
-      
-      recent.forEach(function(city){
-      
-      recentList.innerHTML += `<li>${city}</li>`;
-      
-      });
-      
-      }
+function showRecent(){
 
-      recentList.addEventListener("click", function(e){
-
-        if(e.target.tagName === "LI"){
-        getWeather(e.target.innerText);
-        }
-        
-        });
-
-function showWeather(data){
-
-  const icon = data.weather[0].icon;
+  const recent = JSON.parse(localStorage.getItem("recent")) || [];
   
+  recentList.innerHTML = "";
+  
+  recent.forEach(function(city, index){
+  
+  const li = document.createElement("li");
+  
+  li.innerHTML = `
+  ${city} 
+  <button class="delete-btn" data-index="${index}">❌</button>
+  `;
+  
+  recentList.appendChild(li);
+  
+  });
+  
+  }
+
+function showWeather(data) {
+  const icon = data.weather[0].icon;
+
   weatherDiv.innerHTML = `
   
   <h2>${data.name}</h2>
@@ -97,18 +98,14 @@ function showWeather(data){
   <p id="wind">Wind: ${data.wind.speed} m/s</p>
   
   `;
-  
-  }
+}
 
-  showWeather(data);
-saveRecent(city);
 
-  input.addEventListener("keypress", function(e){
 
-    if(e.key === "Enter"){
+input.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
     getWeather(input.value);
-    }
-    
-    });
+  }
+});
 
-    showRecent();
+showRecent();
