@@ -50,7 +50,7 @@ async function getWeather(city) {
 
     loading.style.display = "none";
 
-    if (data.cod === "404") {
+    if (data.cod === 404) {
       weatherDiv.innerHTML = `
     <div class="card">
     <p style="color:red;">City not found ❌</p>
