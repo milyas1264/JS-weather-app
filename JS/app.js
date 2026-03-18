@@ -7,8 +7,26 @@ const loading = document.querySelector("#loading");
 
 recentList.addEventListener("click", function(e){
 
+  // 👉 delete button click
+  if(e.target.classList.contains("delete-btn")){
+  
+  const index = e.target.getAttribute("data-index");
+  
+  let recent = JSON.parse(localStorage.getItem("recent")) || [];
+  
+  // item remove
+  recent.splice(index,1);
+  
+  localStorage.setItem("recent", JSON.stringify(recent));
+  
+  showRecent();
+  
+  return;
+  }
+  
+  // 👉 city click
   if(e.target.tagName === "LI"){
-  getWeather(e.target.innerText);
+  getWeather(e.target.firstChild.textContent.trim());
   }
   
   });
