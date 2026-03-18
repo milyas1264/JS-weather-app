@@ -1,5 +1,5 @@
 const apiKey = "ade7cdd361e52ae25f8bd5f0b5be2863";
-
+const recentList = document.querySelector("#history");
 const btn = document.querySelector("#search");
 const input = document.querySelector("#city");
 const weatherDiv = document.querySelector("#weather");
@@ -27,7 +27,11 @@ async function getWeather(city){
   loading.style.display = "none";
   
   if(data.cod === "404"){
-  weatherDiv.innerHTML = "City not found";
+    weatherDiv.innerHTML = `
+    <div class="card">
+    <p style="color:red;">City not found ❌</p>
+    </div>
+    `;
   return;
   }
   
@@ -41,6 +45,41 @@ async function getWeather(city){
   }
   
   }
+
+  function saveRecent(city){
+
+    let recent = JSON.parse(localStorage.getItem("recent")) || [];
+    
+    if(!recent.includes(city)){
+    recent.push(city);
+    localStorage.setItem("recent", JSON.stringify(recent));
+    }
+    
+    showRecent();
+    
+    }
+
+    function showRecent(){
+
+      const recent = JSON.parse(localStorage.getItem("recent")) || [];
+      
+      recentList.innerHTML = "";
+      
+      recent.forEach(function(city){
+      
+      recentList.innerHTML += `<li>${city}</li>`;
+      
+      });
+      
+      }
+
+      recentList.addEventListener("click", function(e){
+
+        if(e.target.tagName === "LI"){
+        getWeather(e.target.innerText);
+        }
+        
+        });
 
 function showWeather(data){
 
@@ -60,6 +99,10 @@ function showWeather(data){
   `;
   
   }
+
+  showWeather(data);
+saveRecent(city);
+
   input.addEventListener("keypress", function(e){
 
     if(e.key === "Enter"){
@@ -67,3 +110,5 @@ function showWeather(data){
     }
     
     });
+
+    showRecent();
