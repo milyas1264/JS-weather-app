@@ -52,7 +52,7 @@ const apiKey = "YOUR_API_KEY";
 
 ## 🌐 Live Demo
 
-👉 Add your GitHub Pages link here
+👉 https://milyas1264.github.io/JS-weather-app/
 
 ---
 
